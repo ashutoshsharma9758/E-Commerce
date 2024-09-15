@@ -24,7 +24,7 @@ const ProductSchema= new mongoSchema({
         required:true
     },
     owner:{
-        type:Schema.Types.ObjectId,
+        type:mongoSchema.Types.ObjectId,
         ref:"User",
     },
 })

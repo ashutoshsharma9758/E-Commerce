@@ -2,8 +2,8 @@ const mongoose= require("mongoose");
 const mongoSchema= mongoose.Schema;
 const cartSchema= new mongoSchema({
     item:{
-        type:Schema.Types.ObjectId,
-        ref:"Addvegetable",
+        type:mongoSchema.Types.ObjectId,
+        ref:"Product",
         required:true
     },
     quantity:{
