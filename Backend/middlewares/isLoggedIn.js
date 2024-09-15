@@ -1,5 +1,5 @@
 const jwt= require("jsonwebtoken");
-const Customer = require("../models/customer");
+const User= require('../models/user.js');
 
 module.exports= async (req, res, next)=>{
     if(!req.cookies.token){
@@ -9,7 +9,7 @@ module.exports= async (req, res, next)=>{
     else{
         try{
             let decoded= jwt.verify(req.cookies.token, "myjwtsecret");
-            let user= await Customer.findOne({email:decoded.email}).select("-password");
+            let user= await User.findOne({email:decoded.email}).select("-password");
             res.locals.user=user;
             next();
         } catch(err){

@@ -23,10 +23,6 @@ const ProductSchema= new mongoSchema({
         type:Number,
         required:true
     },
-    title:{
-        type:String,
-        required:true,
-    },
     owner:{
         type:Schema.Types.ObjectId,
         ref:"User",

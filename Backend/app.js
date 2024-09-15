@@ -20,8 +20,12 @@ app.use(cors({
 app.use(session({secret:"mysecret", resave: false, saveUninitialized:true}));
 
 const port= process.env.PORT;
-const product=require("./routes/productRoute.js");
-app.use("/", product);
+const authRoute= require("./routes/authRoute.js");
+const productRoute=require("./routes/productRoute.js");
+const cartRoute=require("./routes/cartRoute.js");
+app.use("/", authRoute);
+app.use("/products", productRoute);
+app.use("cart", cartRoute);
 app.listen(port, ()=>{
     console.log(`server is running on port ${port}`);
 })

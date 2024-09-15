@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const cartSchema = require("./cart");
 const Schema = mongoose.Schema;
 
-const customerSchema = new Schema({
+const userSchema = new Schema({
     name:{
         type:String,
         required:true
@@ -15,9 +15,13 @@ const customerSchema = new Schema({
         type:String,
         required:true
     },
+    isAdmin:{ 
+        type: Boolean,
+        default: false 
+    },
     cart:[cartSchema],
 });
 
-const Customer = mongoose.model("Customer", customerSchema);
-module.exports = Customer;
+const User = mongoose.model("User", userSchema);
+module.exports = User;
 
