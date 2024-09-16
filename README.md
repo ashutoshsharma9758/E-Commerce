@@ -22,13 +22,21 @@ To run this project locally, follow these steps:
 
 1. Clone the repository.
     ```
-    git clone <repository-url>
+    git clone https://github.com/ashutoshsharma9758/E-Commerce
     ```
-2. Navigate to the `backend` folder.
+2. Navigate to the `Backend` folder.
     ```
     cd backend
     ```
 3. Install the necessary dependencies.
+    ```
+    npm install
+    ```
+3. Navigate to the `Frontend` folder.
+    ```
+    cd Backend
+    ```
+4. Install the necessary dependencies.
     ```
     npm install
     ```
