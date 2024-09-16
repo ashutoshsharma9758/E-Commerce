@@ -75,7 +75,7 @@ backend/
 ├── .env                      # Environment variables
 ├── app.js                    # Main entry point for the backend
 └── frontend/                 # Frontend code (separate folder outside backend)
-
+```
 ## API Documentation
 
 ### Authentication
@@ -115,6 +115,7 @@ backend/
       "user": { "id": "string", "name": "string", "email": "string" }
     }
     ```
+
 
 ### Products
 
