@@ -1,33 +1,32 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import "../Styles/shop.css";
 import { AiFillHeart, AiFillEye, AiOutlineClose} from 'react-icons/ai';
 import data_product from "../Components/Assets/new_collections.js";
 import Item from '../Components/Item/Item.jsx';
 import "../Components/Popular/Popular.css"
+import {Link} from 'react-router-dom';
+import Footer from '../Components/Footer/Footer.jsx';
 {/* <li><AiFillHeart /></li> 
 <li ><AiFillEye /></li>  */}
-const Shop = ({shop, Filter, allcatefilter, addtocart}) => {
-    // Toggle Product Detail
-    const [showDetail, setShowDetail] = useState(false)
-    // Detail Page Data
-    const [detail, setDetail] = useState([])
-    //Showing Detail Box
-    const detailpage = (product) => 
-    {
-        const detaildata = ([{product}])
-        const productdetail = detaildata[0]['product']
-        // console.log(productdetail)
-        setDetail(productdetail)
-        setShowDetail(true)
-    }
-    const closedetail = () => 
-    {
-        setShowDetail(false)
-    }
+const Shop = () => {
+    const [items, setItems] = useState([]);
+         useEffect( () => {
+          const fetchItems = async()=>{
+            try{
+              const items = await fetch("http://localhost:8080/products");
+              const allItems = await items.json();
+              setItems(allItems);
+            }
+            catch(err){
+              console.log(err);
+            }
+          }
+          fetchItems();
+        }, [])
   return (
     <>
     {
-        showDetail ? 
+        items ? 
         <>
         <div className='product_detail'>
             <button className='close_btn' onClick={closedetail}><AiOutlineClose /></button>
@@ -85,7 +84,7 @@ const Shop = ({shop, Filter, allcatefilter, addtocart}) => {
                     <h2 style={{alignItems:"center"}}>Shop Product</h2>
                     <div className='popular' style={{marginLeft:"200px"}}>
                     <div className="popular-item" style={{marginLeft:"200px"}}>
-                        {data_product.map((item, i)=>{
+                        {items.map((item, i)=>{
                             return <Item key={i} id={item.id} name={item.name} image={item.image} new_price={item.new_price} old_price={item.old_price}/>
                         })}
                     </div>

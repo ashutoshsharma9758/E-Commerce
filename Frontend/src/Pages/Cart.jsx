@@ -2,56 +2,125 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { AiOutlineClose } from 'react-icons/ai';
 import "../Styles/cart.css";
-const Cart = ({cart, setCart}) => {
+import { useEffect, useState } from "react";
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+axios.defaults.withCredentials = true;
+const Cart = () => {
 
-  // Increase Quantity of cart product
-  const incqty = (product) => 
-  {
-    const exist = cart.find((x) => 
-    {
-      return x.id === product.id
-    })
-    setCart(cart.map((curElm) => 
-    {
-      return curElm.id === product.id ? { ...exist, qty: exist.qty + 1} : curElm
-    }))
-  }
-  // decrese Quantity of cart product
-  const decqty = (product) => 
-  {
-    const exist = cart.find((x) => 
-    {
-      return x.id === product.id
-    })
-    setCart(cart.map((curElm) => 
-    {
-      return curElm.id === product.id ? {...exist ,qty: exist.qty - 1}: curElm
-    }))
-  }
+  const [items, setItems] = useState([]);
+    const[price, setPrice] = useState(0);
+    const [authenticate, setAuthenticate]= useState();
+    const [change, setChange]= useState(true);
+    const navigate= useNavigate();
+    // useEffect(()=>{
+    //    const checkAuth= async()=>{
+    //     try{
+    //         const response = await axios.get('http://localhost:8080/check-auth', { withCredentials: true });
+    //         setAuthenticate(response.data.success);
+    //     }
+    //     catch(err){
+    //         setAuthenticate(false);
+    //     }
+    //    };
+    //     checkAuth(); 
+    // }, []);
+    useEffect(()=>{
+        if(change){
+            const fetchdata = async()=>{
+                try{
+                    const response = await axios.get("http://localhost:8080/cart", { withCredentials: true });
+                    console.log("Fetched data", response.data);
+                    setItems(response.data);
+                }
+                catch(err){
+                    console.error("fetch error", err);
+                    console.log("data is not fetched", err.message);
+                }
+            }
+            fetchdata();
+            setChange(false);
+        }
+     }, [change]);
 
-  //Removing cart product
-  const removeproduct = (product) => 
-  {
-    const exist = cart.find((x) => 
-    {
-      return x.id === product.id
-    })
-    if(exist.qty > 0)
-    {
-      setCart(cart.filter((curElm) => 
-      {
-        return curElm.id !== product.id
-      }))
+    const handlePrice = ()=>{
+        let ans=0;
+        items.map((item)=>{
+            ans+=item.item.price*item.quantity;
+        })
+        setPrice(ans);
     }
-  }
-  //Total Price
-  const total = cart.reduce((price, item) => price + item.qty * item.price, 0)
+    const incAmount =(id)=>{
+        const fetchItem = async()=>{
+            try{
+                const response = await axios.get(`http://localhost:8080/cart/${id}`, { withCredentials: true });
+                console.log("response is", response.data);
+                const jsondata = response.data;
+                jsondata.quantity += 1;
+                console.log("updated json data", jsondata);
+                await axios.put(`http://localhost:8080/cart/${id}`, jsondata, { withCredentials: true })
+                .then(res=>{
+                    console.log(res);
+                })
+                .catch(err=>{
+                    console.log(err);
+                })
+                setChange(true);
+            }
+            catch(err){
+                console.log(err);
+            }
+        }
+        fetchItem();    
+    }
+    const decAmount = (id)=>{
+        const fetchItem = async()=>{
+            try{
+                const response = await axios.get(`http://localhost:8080/customer/cart/${id}`, { withCredentials: true });
+                const jsondata = response.data;
+                if(jsondata.quantity>0){
+                    jsondata.quantity-=1;
+                }
+                await axios.put(`http://localhost:8080/cart/${id}`, jsondata)
+                .then(res=>{
+                    console.log(res);
+                })
+                .catch(err=>{
+                    console.log(err);
+                })
+                setChange(true);
+            }
+            catch(err){
+                console.log(err);
+            }
+        }
+        fetchItem();   
+    }
+    const deleteCart = async(id)=>{
+        try{
+            await axios.delete(`http://localhost:8080/cart/${id}`);
+            setChange(true);
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    useEffect(()=>{
+        handlePrice();
+    } );
+
+    // useEffect(() => {
+    //     if (authenticate === false) {
+    //         navigate('/login');
+    //     }
+    // }, [authenticate, navigate]);
   return (
     <>
     <div className='cart'>
-        <h3>#cart</h3>
+        <h3>CART</h3>
         {
-            cart.length === 0 && 
+            items.length === 0 && 
             <>
             <div className='empty_cart'>
                 <h2>Your Shopping cart is empty</h2>
@@ -61,28 +130,27 @@ const Cart = ({cart, setCart}) => {
         }
         <div className='container'>
           {
-            cart.map((curElm) => 
+            items.map((item) => 
             {
               return(
                 <>
-                <div className='box'>
+                <div className='box' key={item._id}>
                   <div className='img_box'>
-                    <img src={curElm.image} alt=''></img>
+                    <img src={item.item.image} alt='item.item.Name'></img>
                   </div>
                   <div className='detail'>
                     <div className='info'>
-                    <h4>{curElm.cat}</h4>
-                    <h3>{curElm.Name}</h3>
-                    <p>Price: ${curElm.price}</p>
-                    <p>Total: ${curElm.price * curElm.qty}</p>
+                    <h3>{item.item.name}</h3>
+                    <p>Price: ${item.item.price}</p>
+                    <p>Total: ${item.item.price * item.quantity}</p>
                     </div>
                     <div className='quantity'>
-                      <button onClick={() => incqty (curElm)}>+</button>
+                      <button onClick={()=>incAmount(item._id)}>+</button>
                       <input type='number' value={curElm.qty}></input>
-                      <button onClick={() => decqty (curElm)}>-</button>
+                      <button onClick={()=>decAmount(item._id)}>-</button>
                     </div>
                     <div className='icon'>
-                      <li onClick={() => removeproduct(curElm)}><AiOutlineClose /></li>
+                      <li onClick={()=>deleteCart(item._id)}><AiOutlineClose /></li>
                     </div>
                   </div>
                 </div>
@@ -93,10 +161,10 @@ const Cart = ({cart, setCart}) => {
         </div>
         <div className='bottom'>
           {
-            cart.length > 0 && 
+            items.length > 0 && 
             <>
             <div className='Total'>
-              <h4>Sub Total: ${total}</h4>
+              <h4>Sub Total: ${price}</h4>
             </div>
             <button>checkout</button>
             </>
